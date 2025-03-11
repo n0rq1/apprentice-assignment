@@ -13,16 +13,10 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Build Docker image
-        run: |
-          echo "building image"
-          docker build -t express-app:latest .
+        run: docker build -t express-app:latest .
 
       - name: Run Docker container
-        run: |
-          docker run -d -p 80:80 express-app:latest 
-          docker ps
-          docker logs $(docker ps -lq)
-        
+        run: docker run -d -p 80:80 express-app:latest 
 
-      - name: Run tests using apprentice-action
+      - name: Run Liatrio tests
         uses: liatrio/github-actions/apprentice-action@v1.0.0
