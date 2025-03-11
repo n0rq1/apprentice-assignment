@@ -24,6 +24,11 @@
    - [Verify the container is running](#verify-the-container-is-running)  
 
 3. [GitHub Actions](#github-actions)
+   - [What is GitHub Actions?](#what-is-github-actions)
+   - [Creating a GitHub Action workflow file](#creating-a-github-action-workflow-file)
+   - [Prerequisites](#prerequisites)
+   - [How to create secrets for your repository](#how-to-create-secrets-for-your-repository)
+   - [Breakdown of workflow.yml](#breakdown-of-workflowyml)
 
 4. [Cloud Deployment](#cloud-deployment)
 
@@ -239,10 +244,18 @@ https://www.reddit.com/r/docker/comments/x1gd5j/rationale_for_using_docker_to_co
 
 > From the GitHub documentation: Automate, customize, and execute your software development workflows right in your repository with GitHub Actions. You can discover, create, and share actions to perform any job you'd like, including CI/CD, and combine actions in a completely customized workflow. In the scope of this exercise, we want to utilize GitHub actions to: build, test, and push.
 
-### What are yaml files?
-> YAML is ...
-
 ### Creating a GitHub Action workflow file
+
+### Prerequisites
+- Docker Hub account (Remember username/password)
+- Create repository secrets for your Docker hub username and password
+
+### How to create secrets for your repository
+- Go to your repository's settings
+- Look for secrets and variables under the security section
+- Select the "actions" option in the dropdown
+- Create a new repository secret and name it DOCKER_USERNAME and put your Docker Hub username as the value or secret
+- Create another repository secret and name it DOCKER_PASSWORD and put your Docker Hub password as the value or secret
 
 Create the directory, if it doesn't already exist (from the root of the project)
 ```shell
@@ -268,8 +281,12 @@ on:
     branches: ["main"]
 
 jobs: 
-  build:
+  build-test-push:
     runs-on: ubuntu-latest
+
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
 
     steps:
       - name: Checkout Repository
@@ -279,10 +296,19 @@ jobs:
         run: docker build -t express-app .
 
       - name: Run Docker container
-        run: docker run -d -p 80:80 express-app 
+        run: docker run -d -p 80:80 express-app
 
       - name: Run Liatrio tests
         uses: liatrio/github-actions/apprentice-action@v1.0.0
+      
+      - name: Log in to Docker Hub
+        run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+       
+      - name: Push Docker image to Docker Hub
+        if: success()  
+        run: |
+          docker tag express-app $DOCKER_USERNAME/express-app:latest
+          docker push $DOCKER_USERNAME/express-app:latest
 ```
 
 ### Breakdown of workflow.yml
@@ -305,6 +331,13 @@ jobs:
     runs-on: ubuntu-latest
 ```
 In GitHub actions, workflows consist of jobs. The goal of our workflow is to build, test, and push our image that passed the tests to Docker Hub. I will just do one job that accomplishes all 3 of the goals. If I were to break these into 3 separate jobs, _I think_ I would have to build the image and upload it as an artifact, then download the artifact it to test it. But I don't think it is necessary, for this exercise. Lastly, `runs-on` defines what environment/OS we want to run the job on. The latest version of Ubuntu has everything we need to run the build.
+
+```yaml
+env:
+    DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  
+    DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+```
+We need to initialize two environmental variables that we will later use to login to our Docker hub. 
 
 ```yaml
 steps:
@@ -334,6 +367,28 @@ Now that we have our image, we just want to run the container. So we run it with
 Now that our container is running, we can run some tests to make sure the API is working the way it should! Here we are using the keyword `uses` to use the Liatrio GitHub action. This action is designed to run tests against our Docker container.
 
 If our index.js doesn't pass the Liatrio tests, we do not want to update the image in our Docker Hub. If it does pass, we want to properly update the Docker Hub image.
+
+```yaml
+- name: Log in to Docker Hub
+  run: docker login --username $DOCKER_USERNAME --password-stdin
+```
+In order to access Docker hub, we need to login, so we will use those environmental variables we created earlier.
+
+```yaml
+- name: Push Docker image to Docker Hub
+  if: success()  
+  run: |
+    docker tag express-app $DOCKER_USERNAME/express-app:latest
+    docker push $DOCKER_USERNAME/express-app:latest
+```
+Now, we will conditionally push the image to Docker Hub. `if: success()` means, if the image passed all 6 of the Liatrio tests, run the rest of the step. `docker tag express-app $DOCKER_USERNAME/express-app:latest` takes the image that passed all the tests and renames it. In this case - username/nameOfRepository:tagForImage. So our new tag should be anorquist/express-app:latest. Then we will the image to Docker Hub.
+
+Finally, we have our thoroughly tested image in a registry, in which we can access. 
+`https://hub.docker.com/repository/docker/anorquist/express-app`
+
+If done properly, every time you make a push to the main branch, you should see this:
+
+[![Screenshot-2025-03-10-at-10-56-37-PM.png](https://i.postimg.cc/fTXjZmPz/Screenshot-2025-03-10-at-10-56-37-PM.png)](https://postimg.cc/GHLsx8rV)
 
 ---
 
