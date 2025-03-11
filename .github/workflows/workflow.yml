@@ -8,6 +8,10 @@ jobs:
   build-test-push:
     runs-on: ubuntu-latest
 
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -20,3 +24,12 @@ jobs:
 
       - name: Run Liatrio tests
         uses: liatrio/github-actions/apprentice-action@v1.0.0
+      
+      - name: Login to Docker Hub
+        run: docker login --username $DOCKER_USERNAME --password-stdin
+
+      - name: Push Docker image to Docker Hub
+        if: success()  
+        run: |
+          docker tag express-app:latest $DOCKER_USERNAME/express-app:latest
+          docker push $DOCKER_USERNAME/express-app:latest
