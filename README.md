@@ -274,7 +274,7 @@ The goal of our CI/CD pipeline is to:
 
 workflow.yml
 ```yaml
-name: CI for Apprentice Assignment
+name: Workflow for Liatrio Take Home Assignment 
 
 on:
   push:

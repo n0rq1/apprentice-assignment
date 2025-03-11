@@ -1,4 +1,4 @@
-name: CI for Apprentice Assignment
+name: Workflow for Liatrio Take Home Assignment 
 
 on:
   push:
