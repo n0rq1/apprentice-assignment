@@ -58,15 +58,15 @@ npm install express #Gives the directory node_modules and package-lock.json
 
 Create the server file:
 ```
-*.js - I named mine server.js
+*.js - I named mine index.js
 ```
 
 ### Implement server 
-Add code to the server.js file:
+Add code to the index.js file:
 ```js
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const PORT = 80;
 
 app.get('/', (req, res) => {
     const response = {
@@ -83,18 +83,18 @@ app.listen(PORT, () => {
 
 - Start by importing the express module and store it as the const 'express'
 - Create an Express app and store it as the const 'app'
-- Next, we need to define the port we want to listen to. For now it will be 3000 until we actually deploy this
+- Next, we need to define the port we want to listen to. This port is 80, in order to pass the Liatrio tests
 - Now, we need to define a route to listen to 'get' requests
     - The Express app variable comes with numerous methods: get, listen, post, put, delete, all, etc. but we want to have our app up and running so the data is retrievable. app.get is the most appropriate for this
     - app.get('/') means when we get 'get' requests to the root URL, we will respond accordingly
 - We want to respond with a JSON with a message and a timestamp, so we will define an object and store it as 'response'. Finally, we will send a JSON response to the client using res.json(), which returns the object we defined earlier. Passing the variable 'response' into the function json() will send it as a properly formatted JSON to the client. 
 - Finally we want to start our Express server and define what port we are listening on. This is achieved by app.listen(PORT,...). And every time we start the server, we just want to log that the server is up and running, and what port.
 
-Made server.js with this tutorial: https://www.youtube.com/watch?v=SccSCuHhOw0
+Made index.js with this tutorial: https://www.youtube.com/watch?v=SccSCuHhOw0
 
 ### Run the server:
 ```shell
-node server.js
+node index.js
 ```
 
 Should output to the console: 'Server is running on port xxxx' if done correctly :D
@@ -134,7 +134,7 @@ Docker should be recognized as a command if installed. If Docker info successful
 
 ### Create Dockerfile
 
-Create the file Dockerfile, in the same directory your server.js, package.json, and package-lock.json are in.
+Create the file Dockerfile, in the same directory your index.js, package.json, and package-lock.json are in.
 
 ```Dockerfile
 FROM node:16-alpine
@@ -147,9 +147,9 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 80
 
-CMD ["node", "server.js"]
+CMD ["node", "index.js"]
 ```
 
 ### Dockerfile Breakdown
@@ -183,14 +183,14 @@ COPY . .
 - This will copy everything current directory of the host to the current directory of the container (/app). The first '.' is defines the current directory of the host and the second '.' defines the current directory of the container. 
 
 ```Dockerfile
-EXPOSE 3000
+EXPOSE 80
 ```
-- This exposes a port to the host machine. This tells Docker that the container will listen on port 3000. From my understanding this is more like documentation for the user that it will be listening on port 3000. Which is why we will later use the '-p' flag when we run the container, to actually publish the port
+- This exposes a port to the host machine. This tells Docker that the container will listen on port 80. From my understanding this is more like documentation for the user that it will be listening on port 80. Which is why we will later use the '-p' flag when we run the container, to actually publish the port
 
 ```Dockerfile
-CMD ["node", "server.js"]
+CMD ["node", "index.js"]
 ```
-- This defines the commands we want to run when the container starts. Since the command 'node server.js' successfully ran the server earlier, that's what we want to run when the container starts. Container starts, the server starts. 
+- This defines the commands we want to run when the container starts. Since the command 'node index.js' successfully ran the server earlier, that's what we want to run when the container starts. Container starts, the server starts. 
 
 https://docs.docker.com/build/concepts/dockerfile/
 
@@ -202,12 +202,12 @@ This will give us an image based on the Dockerfile in the current directory, spe
 
 ### Run the Docker Container
 ```shell
-docker run -p 3000:3000 give-the-image-a-tag
+docker run -d -p 80:80 give-the-image-a-tag
 ```
-This will run the container and map port 3000 of our container to port 3000 of the host machine.
+This will run the container and map port 80 of our container to port 80 of the host machine.
 
 ### Verify the container is running
-We can simply head over to http://localhost:3000 and we should see the JSON:
+We can simply head over to http://localhost:80 and we should see the JSON:
 ```JSON
 {
   "message": "My name is Austin",
@@ -218,7 +218,7 @@ We can simply head over to http://localhost:3000 and we should see the JSON:
 or alternatively you can run the command:
 
 ```shell
-curl http://localhost:3000
+curl http://localhost:80
 ```
 
 We should expect this to return:
@@ -234,6 +234,106 @@ https://www.reddit.com/r/docker/comments/x1gd5j/rationale_for_using_docker_to_co
 ---
 
 # GitHub Actions
+
+### What is GitHub Actions?
+
+> From the GitHub documentation: Automate, customize, and execute your software development workflows right in your repository with GitHub Actions. You can discover, create, and share actions to perform any job you'd like, including CI/CD, and combine actions in a completely customized workflow. In the scope of this exercise, we want to utilize GitHub actions to: build, test, and push.
+
+### What are yaml files?
+> YAML is ...
+
+### Creating a GitHub Action workflow file
+
+Create the directory, if it doesn't already exist (from the root of the project)
+```shell
+mkdir .github/workflows
+```
+
+Create the workflow file, name it anything *.yml or *.yaml
+```shell
+touch workflow.yml
+```
+
+The goal of our CI/CD pipeline is to:
+- Build the Docker image
+- Run the Liatrio tests
+- If successful, push the image to Docker Hub
+
+workflow.yml
+```yaml
+name: CI for Apprentice Assignment
+
+on:
+  push:
+    branches: ["main"]
+
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Build Docker image
+        run: docker build -t express-app .
+
+      - name: Run Docker container
+        run: docker run -d -p 80:80 express-app 
+
+      - name: Run Liatrio tests
+        uses: liatrio/github-actions/apprentice-action@v1.0.0
+```
+
+### Breakdown of workflow.yml
+
+```yaml
+name: CI for Apprentice Assignment
+```
+We simply just need to create a name for our workflow. So just name it something useful or related to the workflow
+
+```yaml
+on:
+  push:
+    branches: ["main"]
+```
+`on` means do this workflow if... in this case we want to trigger the workflow when there is a push to the branch `main`. If this didn't exist, the workflow would never trigger.
+
+```yaml
+jobs: 
+  build-test-push:
+    runs-on: ubuntu-latest
+```
+In GitHub actions, workflows consist of jobs. The goal of our workflow is to build, test, and push our image that passed the tests to Docker Hub. I will just do one job that accomplishes all 3 of the goals. If I were to break these into 3 separate jobs, _I think_ I would have to build the image and upload it as an artifact, then download the artifact it to test it. But I don't think it is necessary, for this exercise. Lastly, `runs-on` defines what environment/OS we want to run the job on. The latest version of Ubuntu has everything we need to run the build.
+
+```yaml
+steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+```
+In the scope of the job, we need to define steps we want to do. First we just want to name the step with the keyword `name`. Again, name this something useful, because if this step fails, you should easily be able to see that it was this step. The keyword `steps` states: these are the steps I want to do, in order, to complete my desired job. To begin we essentially want to hand over our repository to the workflow runner. `actions/checkout@v4` is official GitHub action that checksout the repository so the workflow runner has access to it. Without this, we would see an error and the workflow won't run.
+
+At this point, we have our environment and the repository to do the rest of the steps. 
+
+```yaml
+- name: Build Docker image
+    run: docker build -t express-app.
+```
+This is the step we take to build the image. The keyword `run` simply means, run this command. `docker build -t express-app .` is the command to build the docker image, where express-app is the tag of the image. At this point, we have our image successfully created with the tag express-app.
+
+```yaml
+- name: Run Docker container
+    run: docker run -d -p 80:80 express-app
+```
+Now that we have our image, we just want to run the container. So we run it with the command `docker run -d -p 80:80 express-app`. And if you remember from earlier, once our container starts, our server starts, as intended with our Dockerfile. At this point, we have our server running properly!
+
+```yaml
+- name: Run Liatrio tests
+  uses: liatrio/github-actions/apprentice-action@v1.0.0
+```
+Now that our container is running, we can run some tests to make sure the API is working the way it should! Here we are using the keyword `uses` to use the Liatrio GitHub action. This action is designed to run tests against our Docker container.
+
+If our index.js doesn't pass the Liatrio tests, we do not want to update the image in our Docker Hub. If it does pass, we want to properly update the Docker Hub image.
 
 ---
 
