@@ -24,5 +24,3 @@ jobs:
 
       - name: Run tests using apprentice-action
         uses: liatrio/github-actions/apprentice-action@v1.0.0
-        with:
-          image: express-app:latest
