@@ -37,7 +37,9 @@ jobs:
         run: docker load -i express-app.tar
 
       - name: Run Docker container
-        run: docker run -d -p 8080:80 express-app:latest 
+        run: |
+          docker run -d -p 80:80 express-app:latest 
+          docker ps
 
       - name: Run tests using apprentice-action
         uses: liatrio/github-actions/apprentice-action@v1.0.0
