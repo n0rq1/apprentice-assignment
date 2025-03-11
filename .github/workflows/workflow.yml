@@ -2,7 +2,7 @@ name: Workflow for Liatrio Take Home Assignment
 
 on:
   push:
-    branches: ["main"]
+    branches: ["TestGHA"]
 
 jobs: 
   build-test-push:
