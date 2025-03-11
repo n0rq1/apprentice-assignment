@@ -21,7 +21,8 @@ jobs:
         run: |
           docker run -d -p 80:80 express-app:latest 
           docker ps
-          curl http://localhost:80
+          run: docker logs $(docker ps -lq)
+        
 
       - name: Run tests using apprentice-action
         uses: liatrio/github-actions/apprentice-action@v1.0.0
