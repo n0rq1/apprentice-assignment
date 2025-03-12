@@ -4,8 +4,9 @@ const PORT = 80;
 
 app.get('/', (req, res) => {
     const response = {
-      message: "My name is Austin",
-      timestamp: Date.now()
+      message: "My name is not Austin",
+      timestamp: Date.now(),
+      testing: "Testing testing testing"
     };
     res.json(response);
 });
