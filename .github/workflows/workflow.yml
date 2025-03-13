@@ -47,6 +47,7 @@ jobs:
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
           service: 'liatrio'
+          region: us-west1
           image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/express-app:latest'
 
       - name: 'Use output'
