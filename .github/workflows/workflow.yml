@@ -6,6 +6,9 @@ on:
 
 jobs: 
   build-test-push:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     runs-on: ubuntu-latest
 
     env:
@@ -33,3 +36,18 @@ jobs:
         run: |
           docker tag express-app $DOCKER_USERNAME/express-app:latest
           docker push $DOCKER_USERNAME/express-app:latest
+
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          service: 'liatrio'
+          image: 'docker.io/{{secrets.DOCKER_USER}}/express-app:latest'
+
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
