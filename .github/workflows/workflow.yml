@@ -5,10 +5,13 @@ on:
     branches: ["main"]
 
 jobs: 
+
   build-test-push:
+
     permissions:
       contents: 'read'
       id-token: 'write'
+
     runs-on: ubuntu-latest
 
     steps:
@@ -45,6 +48,3 @@ jobs:
           service: 'liatrio'
           region: us-west1
           image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/express-app:latest'
-
-      - name: 'Use output'
-        run: 'curl "${{ steps.deploy.outputs.url }}"'
