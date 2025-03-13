@@ -11,10 +11,6 @@ jobs:
       id-token: 'write'
     runs-on: ubuntu-latest
 
-    env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -29,13 +25,13 @@ jobs:
         uses: liatrio/github-actions/apprentice-action@v1.0.0
       
       - name: Log in to Docker Hub
-        run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
        
       - name: Push Docker image to Docker Hub
         if: success()  
         run: |
-          docker tag express-app $DOCKER_USERNAME/express-app:latest
-          docker push $DOCKER_USERNAME/express-app:latest
+          docker tag express-app ${{ secrets.DOCKER_USERNAME }}/express-app:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/express-app:latest
 
       - name: Google Auth
         id: auth
