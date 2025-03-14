@@ -6,7 +6,8 @@ app.get('/', (req, res) => {
     const response = {
       message: "My name is Austin",
       timestamp: Date.now(),
-      testing: "test"
+      testing: "test",
+      testing: "Test"
     };
     res.json(response);
 });
