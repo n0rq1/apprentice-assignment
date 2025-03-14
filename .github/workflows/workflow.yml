@@ -41,21 +41,13 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-      - name: Deploy to Google Cloud Run
-        run: |
-          gcloud run deploy liatrio \
-            --image docker.io/anorquist/liatrio:latest \
-            --platform managed \
-            --region us-west1 \
-            --allow-unauthenticated
     
-      #- id: 'deploy'
-      #  uses: 'google-github-actions/deploy-cloudrun@v2'
-      #  with:
-      #    service: 'liatrio'
-      #    region: us-west1
-      #    image: 'docker.io/$ {{ secrets.DOCKER_USERNAME }}/liatrio:unique'
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          service: 'liatrio'
+          region: us-west1
+          image: 'docker.io/$ {{ secrets.DOCKER_USERNAME }}/liatrio:unique'
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
