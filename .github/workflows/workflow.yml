@@ -39,15 +39,15 @@ jobs:
       - name: Push Docker image to GCR
         if: success()  
         run: |
-          docker tag liatrio gcr.io/${{ secrets.DOCKER_USERNAME }}/liatrio:demo
-          docker push gcr.io/${{ secrets.DOCKER_USERNAME }}/liatrio:demo
+          docker tag liatrio gcr.io/liatrio-xdd/liatrio:demo
+          docker push gcr.io/liatrio-xdd/liatrio:demo
 
       - id: 'deploy'
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
           service: 'liatrio'
           region: us-west1
-          image: 'gcr.io/${{ secrets.DOCKER_USERNAME }}/liatrio:demo'
+          image: 'gcr.io/liatrio-xdd/liatrio:demo'
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
