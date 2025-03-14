@@ -42,8 +42,8 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
     
-      - id: 'deploy'
-        uses: 'google-github-actions/deploy-cloudrun@v2'
+      - id: deploy
+        uses: 'google-github-actions/deploy-cloudrun@v1'
         with:
           service: 'liatrio'
           region: us-west1
