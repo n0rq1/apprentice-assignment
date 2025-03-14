@@ -8,6 +8,7 @@ app.get('/', (req, res) => {
       timestamp: Date.now(),
       testing: "test",
       testing: "Test",
+      testing: "test",
       testing: "test"
     };
     res.json(response);
