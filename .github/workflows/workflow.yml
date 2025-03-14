@@ -47,7 +47,7 @@ jobs:
         with:
           service: 'liatrio'
           region: us-west1
-          image: 'docker.io/$ {{ secrets.DOCKER_USERNAME }}/liatrio:unique'
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:latest'
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
