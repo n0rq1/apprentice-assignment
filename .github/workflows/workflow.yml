@@ -33,8 +33,8 @@ jobs:
       - name: Push Docker image to Docker Hub
         if: success()  
         run: |
-          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:one
-          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:one
+          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ github.sha }}
 
       - name: Google Auth
         id: auth
@@ -47,7 +47,7 @@ jobs:
         with:
           service: 'liatrio'
           region: us-west1
-          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:one'
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ github.sha }}'
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
