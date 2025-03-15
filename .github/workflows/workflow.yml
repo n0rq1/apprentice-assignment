@@ -22,11 +22,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get latest tag
-        id: version
-        run: |
-          VERSION=$(git tag --sort=-creatordate | head -n 1)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        env:
+          GITHUB_ENV: echo "$(git tag --sort=-creatordate | head -n 1)"
 
       - name: Debug Version
-        run: echo "Latest tag is ${{ env.VERSION }}"
+        run: echo "Latest tag is ${{ env.GITHUB_ENV }}"
+
