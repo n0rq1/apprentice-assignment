@@ -3,8 +3,6 @@ name: Workflow for Liatrio Take Home Assignment
 on:
   push:
     branches: ["main", "TestGHA"]
-    tags:
-      - "v*.*.*"
 
 jobs: 
 
