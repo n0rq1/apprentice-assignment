@@ -6,9 +6,6 @@ on:
     tags:
       - "v*.*.*"
 
-env:
-  GITHUB_ENV: echo "$(git describe --tags --abbrev=0)"
-
 jobs: 
 
   build-test-push:
@@ -20,11 +17,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check version
-        run: echo ${{ env.GITHUB_ENV }}
-
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+        env:
+          GITHUB_ENV: echo "$(git describe --tags --abbrev=0)"
         
       - name: Build Docker image
         run: docker build -t liatrio .
