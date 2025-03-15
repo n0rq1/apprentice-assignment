@@ -7,7 +7,7 @@ on:
       - "v*.*.*"
 
 env:
-  GITHUB_ENV: echo "VERSION=$(git describe --tags --abbrev=0)"
+  GITHUB_ENV: echo "$(git describe --tags --abbrev=0)"
 
 jobs: 
 
@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check version
+        run: echo ${{ env.GITHUB_ENV }}
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         
