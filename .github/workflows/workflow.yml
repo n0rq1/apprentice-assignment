@@ -3,6 +3,11 @@ name: Workflow for Liatrio Take Home Assignment
 on:
   push:
     branches: ["main", "TestGHA"]
+    tags:
+      - "v*.*.*"
+
+env:
+  GITHUB_ENV: echo "VERSION=$(git describe --tags --abbrev=0)"
 
 jobs: 
 
@@ -26,15 +31,15 @@ jobs:
 
       - name: Run Liatrio tests
         uses: liatrio/github-actions/apprentice-action@v1.0.0
-      
+
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
        
       - name: Push Docker image to Docker Hub
         if: success()  
         run: |
-          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ github.sha }}
+          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.GITHUB_ENV }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.GITHUB_ENV }}
 
       - name: Google Auth
         id: auth
@@ -47,7 +52,15 @@ jobs:
         with:
           service: 'liatrio'
           region: us-west1
-          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ github.sha }}'
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.GITHUB_ENV }}'
           
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
+
+      - name: Increment version
+        id: tag_version
+        run: |
+          latest=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          new_version=$(echo $latest | awk -F. -v OFS=. '{$NF += 1; print}')
+          git tag $new_version
+          git push origin $new_version
