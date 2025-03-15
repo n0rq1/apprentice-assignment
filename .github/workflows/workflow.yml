@@ -26,10 +26,12 @@ jobs:
         id: version
         run: |
           VERSION=$(git tag --sort=-creatordate | head -n 1)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          DATE=$(date +'%Y-%m-%d')  
+          VERSION_WITH_DATE="${VERSION}-${DATE}"
+          echo "VERSION_WITH_DATE=$VERSION_WITH_DATE" >> $GITHUB_ENV
 
       - name: Debug Version
-        run: echo "Latest tag is ${{ env.VERSION }}"
+        run: echo "Latest tag is ${{ env.VERSION_WITH_DATE }}"
 
       - name: Build Docker image
         run: docker build -t liatrio .
@@ -46,8 +48,8 @@ jobs:
       - name: Push Docker image to Docker Hub
         if: success()  
         run: |
-          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION }}
+          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION_WITH_DATE }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION_WITH_DATE }}
 
       - name: Google Auth
         id: auth
@@ -60,7 +62,7 @@ jobs:
         with:
           service: 'liatrio'
           region: us-west1
-          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION }}'
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION_WITH_DATE }}'
           
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
