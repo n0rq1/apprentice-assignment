@@ -20,8 +20,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-        env:
-          GITHUB_ENV: echo "$(git describe --tags --abbrev=0)"
+
+      - name: Get latest tag
+        id: get_version
+        run: |
+          VERSION=$(git tag --sort=-creatordate | head -n 1)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Debug Version
+        run: echo "Latest tag is ${{ env.VERSION }}"
         
       - name: Build Docker image
         run: docker build -t liatrio .
@@ -38,8 +45,8 @@ jobs:
       - name: Push Docker image to Docker Hub
         if: success()  
         run: |
-          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.GITHUB_ENV }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.GITHUB_ENV }}
+          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION }}
 
       - name: Google Auth
         id: auth
@@ -52,7 +59,7 @@ jobs:
         with:
           service: 'liatrio'
           region: us-west1
-          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.GITHUB_ENV }}'
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION }}'
           
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
