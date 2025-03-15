@@ -2,7 +2,7 @@ name: Workflow for Liatrio Take Home Assignment
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "TestGHA"]
 
 jobs: 
 
@@ -33,21 +33,21 @@ jobs:
       - name: Push Docker image to Docker Hub
         if: success()  
         run: |
-          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:latest
+          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ github.sha }}
 
       - name: Google Auth
         id: auth
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-      - id: 'deploy'
-        uses: 'google-github-actions/deploy-cloudrun@v2'
+          
+      - id: deploy
+        uses: 'google-github-actions/deploy-cloudrun@v1'
         with:
           service: 'liatrio'
           region: us-west1
-          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:latest'
-
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ github.sha }}'
+          
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
