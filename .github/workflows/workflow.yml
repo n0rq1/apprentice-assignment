@@ -39,7 +39,6 @@ jobs:
   push-deploy:
     runs-on: ubuntu-latest
     needs: create-release-version
-    if: needs.create-release-version.outputs.new_release_published == 'true'
 
     steps:
       - name: Log in to Docker Hub
