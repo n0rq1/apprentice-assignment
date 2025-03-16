@@ -9,7 +9,7 @@ jobs:
   build-test-push:
 
     permissions:
-      contents: 'read'
+      contents: 'write'
       id-token: 'write'
 
     runs-on: ubuntu-latest
@@ -17,50 +17,12 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Get latest tag
-        id: version
-        run: |
-          VERSION=$(git tag --sort=-creatordate | head -n 1)
-          DATE=$(date +'%Y-%m-%d')  
-          VERSION_WITH_DATE="${VERSION}-${DATE}"
-          echo "VERSION_WITH_DATE=$VERSION_WITH_DATE" >> $GITHUB_ENV
-
-      - name: Debug Version
-        run: echo "Latest tag is ${{ env.VERSION_WITH_DATE }}"
-
-      - name: Build Docker image
-        run: docker build -t liatrio .
-
-      - name: Run Docker container
-        run: docker run -d -p 80:80 liatrio
-
-      - name: Run Liatrio tests
-        uses: liatrio/github-actions/apprentice-action@v1.0.0
+      - name: Install Semantic Release
+        run: npm install -g semantic-release @semantic-release/git @semantic-release/changelog
       
-      - name: Log in to Docker Hub
-        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
-       
-      - name: Push Docker image to Docker Hub
-        if: success()  
-        run: |
-          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION_WITH_DATE }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION_WITH_DATE }}
-
-      - name: Google Auth
-        id: auth
-        uses: 'google-github-actions/auth@v2'
-        with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-          
-      - id: deploy
-        uses: 'google-github-actions/deploy-cloudrun@v1'
-        with:
-          service: 'liatrio'
-          region: us-west1
-          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION_WITH_DATE }}'
-          
-      - name: 'Use output'
-        run: 'curl "${{ steps.deploy.outputs.url }}"'
+      - name: Run Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+      
