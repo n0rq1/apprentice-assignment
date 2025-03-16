@@ -8,10 +8,6 @@ jobs:
 
   build-test-push:
 
-    permissions:
-      contents: 'write'
-      id-token: 'write'
-
     runs-on: ubuntu-latest
 
     environment: Liatrio
