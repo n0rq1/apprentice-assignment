@@ -19,17 +19,50 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t liatrio .
+
+      - name: Run Docker container
+        run: docker run -d -p 80:80 liatrio
+
+      - name: Run Liatrio tests
+        uses: liatrio/github-actions/apprentice-action@v1.0.0
+      
       - name: Semantic Release
+        if: success()
         uses: cycjimmy/semantic-release-action@v4
         id: semantic 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Do something when a new release published
+      
+      - name: Log in to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      
+      - name: Save version for Docker tag
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
-          echo ${{ steps.semantic.outputs.new_release_version }}
-          echo ${{ steps.semantic.outputs.new_release_major_version }}
-          echo ${{ steps.semantic.outputs.new_release_minor_version }}
-          echo ${{ steps.semantic.outputs.new_release_patch_version }}
+          VERSION="${{ steps.semantic.outputs.new_release_version }}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV 
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION }}
+
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          
+      - id: deploy
+        uses: 'google-github-actions/deploy-cloudrun@v1'
+        with:
+          service: 'liatrio'
+          region: us-west1
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ env.VERSION}}'
+          
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
