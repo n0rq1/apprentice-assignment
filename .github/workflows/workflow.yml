@@ -7,11 +7,8 @@ on:
 jobs: 
 
   build-test:
-
     runs-on: ubuntu-latest
-
-    environment: Liatrio
-
+    #environment: Liatrio
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,7 +22,7 @@ jobs:
       - name: Run Liatrio tests
         uses: liatrio/github-actions/apprentice-action@v1.0.0
 
-  release:
+  create-release-version:
     runs-on: ubuntu-latest
     needs: build-test
     steps:
@@ -41,7 +38,7 @@ jobs:
   
   push-deploy:
     runs-on: ubuntu-latest
-    needs: release
+    needs: create-release-version
     if: needs.build-test-push.outputs.new_release_published == 'true'
 
     steps:
@@ -50,7 +47,7 @@ jobs:
       
       - name: Save version for Docker tag
         run: |
-          VERSION="${{ needs.build-test-push.outputs.new_release_version }}"
+          VERSION="${{ needs.build-test.outputs.new_release_version }}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Push Docker image to Docker Hub
