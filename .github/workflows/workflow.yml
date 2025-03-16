@@ -25,4 +25,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+
+      - name: Run Semantic Release
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(npx semantic-release | tee /dev/stderr | grep -oP "Published release: \K(v[0-9]+\.[0-9]+\.[0-9]+)")
+          echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
+      
+      - name: Debug New Version
+        run: echo "The new version released is ${{ env.NEW_VERSION }}"
       
