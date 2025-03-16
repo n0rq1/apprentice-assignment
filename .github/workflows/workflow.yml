@@ -49,7 +49,7 @@ jobs:
       
       - name: Save version for Docker tag
         run: |
-          VERSION="${{ needs.build-test.outputs.new_release_version }}"
+          VERSION="${{ needs.create-release-version.outputs.new_release_version }}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Push Docker image to Docker Hub
