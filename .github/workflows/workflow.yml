@@ -14,26 +14,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    environment: Liatrio
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Install Semantic Release
-        run: npm install -g semantic-release @semantic-release/git @semantic-release/changelog
-      
-      - name: Run Semantic Release
+    
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
-
-      - name: Run Semantic Release
-        id: release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION=$(npx semantic-release | tee /dev/stderr | grep -oP "Published release: \K(v[0-9]+\.[0-9]+\.[0-9]+)")
-          echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
-      
-      - name: Debug New Version
-        run: echo "The new version released is ${{ env.NEW_VERSION }}"
-      
+          GH_TOKEN: $${{ secrets.GH_TOKEN }}
