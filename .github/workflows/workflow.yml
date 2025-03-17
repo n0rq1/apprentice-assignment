@@ -40,7 +40,7 @@ jobs:
       - name: Save version for Docker tag
         id: version
         run: |
-          VERSION="${{ needs.create-release-version.outputs.new_release_version }}"
+          VERSION="${{ steps.semantic.outputs.new_release_version }}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
   
   push-deploy:
