@@ -35,20 +35,18 @@ jobs:
         uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Save version for Docker tag
         id: version
         run: |
-          VERSION="${{ steps.semantic.outputs.new_release_version }}"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          VERSION="${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_OUTPUT
 
   push-image:
     runs-on: ubuntu-latest
     needs: create-release-version
     outputs:
       version: ${{ needs.create-release-version.outputs.version }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,9 +67,6 @@ jobs:
     needs: push-image
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4 
-      
       - name: Google Auth
         id: auth
         uses: 'google-github-actions/auth@v2'
@@ -79,7 +74,7 @@ jobs:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
       - id: deploy
-        uses: 'google-github-actions/deploy-cloudrun@v1'
+        uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
           service: 'liatrio'
           region: us-west1
