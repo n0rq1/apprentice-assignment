@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: run-test
     outputs:
-      version: ${{ steps.version.outputs.VERSION }}
+      version: ${{ steps.get_version.outputs.VERSION }}
 
     steps:
       - name: Checkout
@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Save version for Docker tag
-        id: version
+        id: get_version
         run: echo "VERSION=${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_OUTPUT
 
   push-image:

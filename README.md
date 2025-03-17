@@ -243,20 +243,64 @@ https://www.reddit.com/r/docker/comments/x1gd5j/rationale_for_using_docker_to_co
 
 ### What is GitHub Actions?
 
-> From the GitHub documentation: Automate, customize, and execute your software development workflows right in your repository with GitHub Actions. You can discover, create, and share actions to perform any job you'd like, including CI/CD, and combine actions in a completely customized workflow. In the scope of this exercise, we want to utilize GitHub actions to: build, test, and push.
+From the GitHub documentation: Automate, customize, and execute your software development workflows right in your repository with GitHub Actions. You can discover, create, and share actions to perform any job you'd like, including CI/CD, and combine actions in a completely customized workflow. In the scope of this exercise, we want to utilize GitHub actions to: build, test, push, and deploy. In the scope of this GitHub Action Workflow, whenever a push is made to the `main` branch, we need to run a sequence of jobs. These jobs are run sequentially, from top-down.
 
-### Creating a GitHub Action workflow file
+### General Structure of GitHub Action Workflows
+At the top of every GitHub Action Workflow, there should be a name. For example: `name: Amazing GHA Workflow`. The name generally should be some indicator of what the workflow's purpose is.
 
-### Prerequisites
+Next should be the keyword `on`, which specifies the event that triggers the workflow. The 3 main event are triggers: `push`, `pull_request`, & `workflow_dispatch`. Once the event trigger is defined, then you must define what branches you want the workflow to run on. An example of these in its entirety is: 
+```yaml
+on:
+  push:
+    branches:
+      - main
+```
+This will run the workflow whenever there is a push to main!
+
+Once we have determined when to run the workflow, we need to define jobs. Jobs, as mentioned earlier, are executed in sequence and should each achieve a specific goal. Jobs are defined using the `jobs` keyword, and each job runs in its own virtual machine. Each job must be given a name, and the steps within each job are indented accordingly. The steps are defined with the keyword... `steps`. This is pretty open ended as each job requires different steps, so it's best explained through an example:
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: npm test
+```
+This example shows us running a job named `test` that runs on Ubunu-latest virtual environment. There are 2 steps to our job. First, we want to checkout the code from our repository. Using the `uses` keyword, we are going to invoke the already existing action 'checkout@v2'. This fetches the code from our repository and makes it available to the VM. Once that is complete, we will run the second step called 'Run tests', where we are going to run the command `npm test` on the VM. 
+
+### Prerequisites for OUR GitHub Action Workflow
 - Docker Hub account (Remember username/password)
-- Create repository secrets for your Docker hub username and password
+- Create repository secrets for your Docker hub username and password and our GCP Credentials
+- File called .releaserc.json in the root of the repository
 
-### How to create secrets for your repository
+How to create secrets for your repository:
 - Go to your repository's settings
 - Look for secrets and variables under the security section
 - Select the "actions" option in the dropdown
 - Create a new repository secret and name it DOCKER_USERNAME and put your Docker Hub username as the value or secret
 - Create another repository secret and name it DOCKER_PASSWORD and put your Docker Hub password as the value or secret
+- Create another reposiotry secret and name it GCP_CREDENTIALS and put the JSON object in it (that is shown in the next section)
+
+How to get GCP Credentials:
+- step 1
+- step 2
+
+**.releaserc.json**
+```json
+{
+    "branches": ["main"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/github"
+    ]
+}
+```
+Explanation:
+
+### Creating our GitHub Action Workflow
 
 Create the directory, if it doesn't already exist (from the root of the project)
 ```shell
@@ -268,12 +312,7 @@ Create the workflow file, name it anything *.yml or *.yaml
 touch workflow.yml
 ```
 
-The goal of our CI/CD pipeline is to:
-- Build the Docker image
-- Run the Liatrio tests
-- If successful, push the image to Docker Hub
-
-workflow.yml
+**workflow.yml**
 ```yaml
 name: Workflow for Liatrio Take Home Assignment 
 
@@ -282,40 +321,98 @@ on:
     branches: ["main"]
 
 jobs: 
-  build-test-push:
+  run-test:
     runs-on: ubuntu-latest
-
-    env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Build Docker image
-        run: docker build -t express-app .
+        run: docker build -t liatrio .
 
       - name: Run Docker container
-        run: docker run -d -p 80:80 express-app
+        run: docker run -d -p 80:80 liatrio
 
       - name: Run Liatrio tests
         uses: liatrio/github-actions/apprentice-action@v1.0.0
-      
-      - name: Log in to Docker Hub
-        run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+
+  create-release-version:
+    runs-on: ubuntu-latest
+    needs: run-test
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Semantic Release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save version for Docker tag
+        id: version
+        run: echo "VERSION=${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_OUTPUT
+
+  push-image:
+    runs-on: ubuntu-latest
+    needs: create-release-version
+    outputs:
+      version: ${{ needs.create-release-version.outputs.version }}
        
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t liatrio .
+
+      - name: Log in to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
       - name: Push Docker image to Docker Hub
-        if: success()  
+        env:
+          VERSION: ${{ needs.create-release-version.outputs.version }}
         run: |
-          docker tag express-app $DOCKER_USERNAME/express-app:latest
-          docker push $DOCKER_USERNAME/express-app:latest
+          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:$VERSION
+          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:$VERSION
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: push-image
+
+    steps:
+      - name: Google Auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          service: 'liatrio'
+          region: us-west1
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ needs.push-image.outputs.version }}'
+
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
 ```
 
-### Breakdown of workflow.yml
+### Stucture of the workflow
+The workflow's intent is ultimately to deploy a Docker container to Google Cloud Run. However, there are a few necessary steps to ensure the integrity of the app. The goal of this workflow is to:
+- Make sure the app's minimum functionality is met. - Defined by the Liatrio tests
+- Create a **Semantic Version** for the app, ensuring that it follows proper versioning rules.
+- Push our image to Docker Hub
+- Deploy the container to Google Cloud Run
 
+These steps are broken up into 4 jobs within the workflow: `run-test`, `push-image`, `push-image`, `deploy`.
+
+### Breakdown of workflow.yml
 ```yaml
-name: CI for Apprentice Assignment
+name: Workflow for Liatrio Take Home Assignment  
 ```
 We simply just need to create a name for our workflow. So just name it something useful or related to the workflow
 
@@ -326,74 +423,76 @@ on:
 ```
 `on` means do this workflow if... in this case we want to trigger the workflow when there is a push to the branch `main`. If this didn't exist, the workflow would never trigger.
 
+**run-test**
 ```yaml
 jobs: 
-  build-test-push:
+  run-test:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t liatrio .
+
+      - name: Run Docker container
+        run: docker run -d -p 80:80 liatrio
+
+      - name: Run Liatrio tests
+        uses: liatrio/github-actions/apprentice-action@v1.0.0
 ```
-In GitHub actions, workflows consist of jobs. The goal of our workflow is to build, test, and push our image that passed the tests to Docker Hub. I will just do one job that accomplishes all 3 of the goals. If I were to break these into 3 separate jobs, _I think_ I would have to build the image and upload it as an artifact, then download the artifact it to test it. But I don't think it is necessary, for this exercise. Lastly, `runs-on` defines what environment/OS we want to run the job on. The latest version of Ubuntu has everything we need to run the build.
+The first job in our workflow is designed to test our Docker image. The Liatrio tests are designed to verify the functionality of our application (index.js). There are 6 tests that test the following:
+- A 200 status code is returned
+- A JSON object is returned with a Message
+- A JSON object is returned with a timestamp
+- The message says: "My name is ..."
+- The timestamp is UNIX style 
+- The timestamp is within a few seconds of the current time of testing
+
+The `run-test` job first uses `actions/checkout@v4` to fetch the code from the repository and make it available to the VM, running on Ubuntu-latest. Now that everything is available, we will build the image and run the container. With the container running, we can lastly run the Liatrio tests that were previously described. 
+
+**create-release-version**
+```yaml
+  create-release-version:
+    runs-on: ubuntu-latest
+    needs: run-test
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Semantic Release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save version for Docker tag
+        id: get_version
+        run: echo "VERSION=${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_OUTPUT
+```
+This job is dependent on the `run-test` job. If the tests did not pass 6/6, then we should not carry on with this job. This is why we have to have the `needs` keyword. Meaning we need the `run-test` job to have completed successfully in order to run the `create-release-version` job. Additionally information isn't passed from job to job automatically. However, you can create output for your job, that can be accessed in the next job! For this, we need the `outputs` keyword, where we essentially define a variable we want to output. In this case, I chose version to use in the next job for the image tags. 
+
+`version: ${{ steps.version.outputs.VERSION }}` means we are assigning **version** to be the output of the step **get_version**, which will be explained in a few sections from now. 
 
 ```yaml
-env:
-    DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  
-    DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+- name: Semantic Release
+  id: semantic
+  uses: cycjimmy/semantic-release-action@v4
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
-We need to initialize two environmental variables that we will later use to login to our Docker hub. 
-
-```yaml
-steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-```
-In the scope of the job, we need to define steps we want to do. First we just want to name the step with the keyword `name`. Again, name this something useful, because if this step fails, you should easily be able to see that it was this step. The keyword `steps` states: these are the steps I want to do, in order, to complete my desired job. To begin we essentially want to hand over our repository to the workflow runner. `actions/checkout@v4` is official GitHub action that checksout the repository so the workflow runner has access to it. Without this, we would see an error and the workflow won't run.
-
-At this point, we have our environment and the repository to do the rest of the steps. 
-
-```yaml
-- name: Build Docker image
-    run: docker build -t express-app.
-```
-This is the step we take to build the image. The keyword `run` simply means, run this command. `docker build -t express-app .` is the command to build the docker image, where express-app is the tag of the image. At this point, we have our image successfully created with the tag express-app.
-
-```yaml
-- name: Run Docker container
-    run: docker run -d -p 80:80 express-app
-```
-Now that we have our image, we just want to run the container. So we run it with the command `docker run -d -p 80:80 express-app`. And if you remember from earlier, once our container starts, our server starts, as intended with our Dockerfile. At this point, we have our server running properly!
-
-```yaml
-- name: Run Liatrio tests
-  uses: liatrio/github-actions/apprentice-action@v1.0.0
-```
-Now that our container is running, we can run some tests to make sure the API is working the way it should! Here we are using the keyword `uses` to use the Liatrio GitHub action. This action is designed to run tests against our Docker container.
-
-If our index.js doesn't pass the Liatrio tests, we do not want to update the image in our Docker Hub. If it does pass, we want to properly update the Docker Hub image.
-
-```yaml
-- name: Log in to Docker Hub
-  run: docker login --username $DOCKER_USERNAME --password-stdin
-```
-In order to access Docker hub, we need to login, so we will use those environmental variables we created earlier.
-
-```yaml
-- name: Push Docker image to Docker Hub
-  if: success()  
-  run: |
-    docker tag express-app $DOCKER_USERNAME/express-app:latest
-    docker push $DOCKER_USERNAME/express-app:latest
-```
-Now, we will conditionally push the image to Docker Hub. `if: success()` means, if the image passed all 6 of the Liatrio tests, run the rest of the step. `docker tag express-app $DOCKER_USERNAME/express-app:latest` takes the image that passed all the tests and renames it. In this case - username/nameOfRepository:tagForImage. So our new tag should be anorquist/express-app:latest. Then we will the image to Docker Hub.
-
-Finally, we have our thoroughly tested image in a registry, in which we can access. 
-`https://hub.docker.com/repository/docker/anorquist/express-app`
-
-If done properly, every time you make a push to the main branch, you should see this:
-
-[![Screenshot-2025-03-10-at-10-56-37-PM.png](https://i.postimg.cc/fTXjZmPz/Screenshot-2025-03-10-at-10-56-37-PM.png)](https://postimg.cc/GHLsx8rV)
+Here, we are invoking the already existing GitHub Action that automates Semantic Release for our workflow. Depending on the commit message, the version of our app will auto update. The structure of each version is: Major.Minor.Patch. To increment each one we must specify in our commit messages. For example:
+- fix: Rest of commit message... , will increment the Patch version
+- feat: Rest of commit message... , will increment the Minor Version
+- fix/feat: Rest of commit message... + 2 line breaks BREAKING CHANGE: 
 
 ---
 
 # Cloud Deployment
+I chose Google Cloud Run for deployment because, in my research, I found that the container-as-a-service (CaaS) model provides the best balance of scalability, cost efficiency, and ease of management. Cloud Run allows me to deploy my microservice as a stateless container without worrying about underlying infrastructure, making it a great fit for my project. Cloud Run offers a free tier as well, which was a major bonus. The other service I considered, was AWS ECS, which offers essentially the same service, but opted to use Cloud Run because I have used GCP before.
 
 ---
 
