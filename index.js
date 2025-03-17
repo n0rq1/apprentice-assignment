@@ -5,7 +5,7 @@ const PORT = 80;
 app.get('/', (req, res) => {
     const response = {
       message: "My name is Austin Norquist",
-      timestamp: Date.now() / 20.0
+      timestamp: Date.now()
     };
     res.json(response);
 });
