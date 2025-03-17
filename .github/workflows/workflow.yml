@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-test
     outputs:
-      version: ${{ steps.version.outputs.test }}
+      version: ${{ steps.version.outputs.VERSION }}
 
     steps:
       - name: Checkout
