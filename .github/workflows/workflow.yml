@@ -42,6 +42,7 @@ jobs:
         run: |
           VERSION="${{ steps.semantic.outputs.new_release_version }}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
   
   push-deploy:
     runs-on: ubuntu-latest
