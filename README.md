@@ -484,10 +484,29 @@ This job is dependent on the `run-test` job. If the tests did not pass 6/6, then
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
-Here, we are invoking the already existing GitHub Action that automates Semantic Release for our workflow. Depending on the commit message, the version of our app will auto update. The structure of each version is: Major.Minor.Patch. To increment each one we must specify in our commit messages. For example:
-- fix: Rest of commit message... , will increment the Patch version
-- feat: Rest of commit message... , will increment the Minor Version
-- fix/feat: Rest of commit message... + 2 line breaks BREAKING CHANGE: 
+Here, we are invoking the already existing GitHub Action that automates Semantic Release for our workflow. Depending on the commit message, the version of our app will auto update. The structure of each version is: **Major**.**Minor**.**Patch**.
+- **Patch Version (`x.y.Z`)** – Incremented for bug fixes:  
+  - Example: `fix: Timestamp formatting fixed`  
+
+- **Minor Version (`x.Y.0`)** – Incremented for new features:  
+  - Example: `feat: Added new field to JSON`  
+
+- **Major Version (`X.0.0`)** – Incremented for breaking changes:  
+  - Example:  
+    ```  
+    feat: Changed API Endpoint  
+
+    BREAKING CHANGE: More info...  
+    ```  
+
+Additionally in this step, we use the keyword `env` which identifies environmental variables. In this case, we are storing an environmental variable called **GITHUB_TOKEN**, where it contains the value secrets.GITHUB_TOKEN. This secret wasn't set by us, so where did it come from? GitHub automatically creates the secret GITHUB_TOKEN when a workflow runs. This is used to authenticate API requests, and is only active while the workflow runs. If we don't set GITHUB_TOKEN, we won't be able to create a new semantic release version :D.
+
+```yaml
+- name: Save version for Docker tag
+  id: get_version
+  run: echo "VERSION=${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_OUTPUT
+```
+The last step, is where we need to output the version, so we can pass it to the next job. 
 
 ---
 
