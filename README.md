@@ -16,7 +16,7 @@
     - [Why containerize our app?](#why-containerize-our-app) 
     - [Docker](#docker)  
     - [Node Image Variants](#node-image-variants)  
-    - [Make sure Docker is installed and the Docker daemon is running](#make-sure-docker-is-installed-and-the-docker-daemon-is-running)  
+    - [Make sure Docker is installed and the Docker daemon is running](#make-sure-docker-is-installed-and-make-sure-docker-daemon-is-running) 
     - [Create Dockerfile](#create-dockerfile)  
     - [Dockerfile Breakdown](#dockerfile-breakdown)
     - [Build the Docker image](#build-the-docker-image)  
@@ -130,9 +130,6 @@ If you're looking for the lightest image possible, go with this one. Based in Al
 Slim 
 From what I have read, this is the sweet spot between regular and Alpine. Based in Debian, but stripped down and removes most of the unnecessary tools.
 
-https://hub.docker.com/_/node
-https://github.com/nodejs/docker-node/blob/main/README.md#how-to-use-this-image
-
 ### Make sure Docker is installed and make sure Docker daemon is running
 ```shell
 docker info
@@ -199,8 +196,6 @@ CMD ["node", "index.js"]
 ```
 - This defines the commands we want to run when the container starts. Since the command 'node index.js' successfully ran the server earlier, that's what we want to run when the container starts. Container starts, the server starts. 
 
-https://docs.docker.com/build/concepts/dockerfile/
-
 ### Build the Docker image
 ```shell
 build -t give-the-image-a-tag .
@@ -230,10 +225,6 @@ We should expect this to return:
 ```JSON
 {"message":"My name is Austin","timestamp":123456789}
 ```
-
-https://docs.docker.com/reference/dockerfile/
-
-https://www.reddit.com/r/docker/comments/x1gd5j/rationale_for_using_docker_to_containerize/
 
 ---
 
@@ -281,9 +272,7 @@ How to create secrets for your repository:
 - Create another repository secret and name it DOCKER_PASSWORD and put your Docker Hub password as the value or secret
 - Create another reposiotry secret and name it GCP_CREDENTIALS and put the JSON object in it (that is shown in the next section)
 
-How to get GCP Credentials:
-- step 1
-- step 2
+How to get [GCP Credentials](#how-to-create-the-gcp_credentials-secret)
 
 **.releaserc.json**
 ```json
@@ -296,7 +285,7 @@ How to get GCP Credentials:
     ]
 }
 ```
-Explanation:
+Explanation: This configuration is for Semantic Release, which automates versioning and release management. It triggers on the "main" branch and uses three plugins: commit-analyzer (to determine the type of version update based on commit messages), release-notes-generator (to create release notes from commit messages), and github (to publish the release to GitHub).
 
 ### Creating our GitHub Action Workflow
 
@@ -558,7 +547,7 @@ This job is extremely simple, we are just going to use our VM to build an image 
 ```
 The last job of our workflow will be to redeploy our service with the updated image. Since in the previous job, we create a new image, where the tag was the new semantic release version, we need to update our image that GCR is pulling from. Before doing that, we need to authenticate ourselves. If we don't authenticate, we won't have access to our GCR service, which is a good thing! We authenticate ourselves by using the Google Auth GitHub action. Here, we just need to pass it our credentials secret. 
 
-To create the GCP_CREDENTIALS secret:
+# How to create the GCP_CREDENTIALS secret:
 - Go to your project on Google Cloud
 - Go to the navigation menu in the top left
 - In the nav menu, go to 'I AM & Admin'
@@ -608,3 +597,31 @@ Google Cloud Run just needs us to do a few things:
 ---
 
 # References
+**Node.js Application**
+https://www.w3schools.com/nodejs/nodejs_intro.asp
+https://expressjs.com/en/starter/faq.html
+https://www.youtube.com/watch?v=SccSCuHhOw0
+https://github.com/expressjs/express
+https://www.json.org/json-en.html
+
+
+**Containerizing the Application with Docker**
+https://hub.docker.com/_/node 
+http://hub.docker.com/_/docker
+https://github.com/nodejs/docker-node/blob/main/README.md#how-to-use-this-image
+https://www.youtube.com/watch?v=cw34KMPSt4k
+https://www.youtube.com/watch?v=gAkwW2tuIqE
+https://docs.docker.com/reference/dockerfile/
+https://www.reddit.com/r/docker/comments/x1gd5j/rationale_for_using_docker_to_containerize/
+
+**GitHub Actions** 
+https://github.com/actions/checkout
+https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions
+https://github.com/liatrio/github-actions/tree/v1.0.0/apprentice-action
+https://github.com/cycjimmy/semantic-release-action/tree/v4/
+https://docs.github.com/en/actions/writing-workflows
+
+**Cloud Deployment**
+https://cloud.google.com/run?hl=en
+http://youtube.com/watch?v=AL2rAmWFZjM
+https://www.youtube.com/watch?v=3OP-q55hOUI
