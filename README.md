@@ -97,8 +97,6 @@ app.listen(PORT, () => {
 - We want to respond with a JSON with a message and a timestamp, so we will define an object and store it as 'response'. Finally, we will send a JSON response to the client using res.json(), which returns the object we defined earlier. Passing the variable 'response' into the function json() will send it as a properly formatted JSON to the client. 
 - Finally we want to start our Express server and define what port we are listening on. This is achieved by app.listen(PORT,...). And every time we start the server, we just want to log that the server is up and running, and what port.
 
-Made index.js with this tutorial: https://www.youtube.com/watch?v=SccSCuHhOw0
-
 ### Run the server:
 ```shell
 node index.js
@@ -271,8 +269,6 @@ How to create secrets for your repository:
 - Create a new repository secret and name it DOCKER_USERNAME and put your Docker Hub username as the value or secret
 - Create another repository secret and name it DOCKER_PASSWORD and put your Docker Hub password as the value or secret
 - Create another reposiotry secret and name it GCP_CREDENTIALS and put the JSON object in it (that is shown in the next section)
-
-How to get [GCP Credentials](#how-to-create-the-gcp_credentials-secret)
 
 **.releaserc.json**
 ```json
