@@ -5,45 +5,46 @@
 ---
 # Table of Contents
 
-
 1. [Node.js Application](#nodejs-application)  
-   - [Node.js](#nodejs)  
-   - [Express.js](#expressjs)  
-   - [Steps to Set Up Node.js and Express.js App](#steps-to-set-up-nodejs-and-expressjs-app)  
-   - [Implement Server](#implement-server)  
-   - [Run the Server](#run-the-server)  
+    - [Node.js](#nodejs)  
+    - [Express.js](#expressjs)  
+    - [Steps to Set Up Node.js and Express.js App](#steps-to-set-up-nodejs-and-expressjs-app)  
+    - [Implement Server](#implement-server)  
+    - [Run the Server](#run-the-server)  
 
 2. [Containerizing the Application with Docker](#containerizing-the-application-with-docker) 
     - [Why containerize our app?](#why-containerize-our-app) 
-   - [Docker](#docker)  
-   - [Node Image Variants](#node-image-variants)  
-   - [Make sure Docker is installed and the Docker daemon is running](#make-sure-docker-is-installed-and-the-docker-daemon-is-running)  
-   - [Create Dockerfile](#create-dockerfile)  
-   - [Dockerfile Breakdown](#dockerfile-breakdown)
-   - [Build the Docker image](#build-the-docker-image)  
-   - [Run the Docker Container](#run-the-docker-container)  
-   - [Verify the container is running](#verify-the-container-is-running)  
+    - [Docker](#docker)  
+    - [Node Image Variants](#node-image-variants)  
+    - [Make sure Docker is installed and the Docker daemon is running](#make-sure-docker-is-installed-and-the-docker-daemon-is-running)  
+    - [Create Dockerfile](#create-dockerfile)  
+    - [Dockerfile Breakdown](#dockerfile-breakdown)
+    - [Build the Docker image](#build-the-docker-image)  
+    - [Run the Docker Container](#run-the-docker-container)  
+    - [Verify the container is running](#verify-the-container-is-running)  
 
 3. [GitHub Actions](#github-actions)
-   - [What is GitHub Actions?](#what-is-github-actions)
-   - [Creating a GitHub Action workflow file](#creating-a-github-action-workflow-file)
-   - [Prerequisites](#prerequisites)
-   - [How to create secrets for your repository](#how-to-create-secrets-for-your-repository)
-   - [Breakdown of workflow.yml](#breakdown-of-workflowyml)
+    - [What is GitHub Actions?](#what-is-github-actions)
+    - [General Structure of GitHub Action Workflows](#general-structure-of-github-action-workflows)
+    - [Prerequisites for OUR GitHub Action Workflow](#prerequisites-for-our-github-action-workflow)
+    - [Creating our GitHub Action Workflow](#creating-our-github-action-workflow)
+    - [Stucture of the workflow](#stucture-of-the-workflow)
+    - [Breakdown of workflow.yml](#breakdown-of-workflowyml)
 
 4. [Cloud Deployment](#cloud-deployment)
-
-5. [Deployment Workflow](#deployment-workflow)
+    - [Google Cloud Run](#google-cloud-run)
+    - [What do we need to deploy to Google Cloud Run](#what-do-we-need-to-deploy-to-google-cloud-run)
+    - [How to create a Google Cloud Run service](#how-to-create-a-google-cloud-run-service)
 
 ---
 
 # Node.js application
 
 ### Node.js
-> Node.js is a software platform for server-side and networking applications. Node.js contains a built-in, asynchronous I/O library for file, socket, and HTTP communication.
+Node.js is a software platform for server-side and networking applications. Node.js contains a built-in, asynchronous I/O library for file, socket, and HTTP communication.
 
 ### Express.js
-> Express.js is a popular Node.js framework, used to build web apps and APIs. It is referred to as "minimalist", as it mainly serves the basic needs of a web app, such as: handling HTTP requests, routing, and middleware integration. Despite being minimalist, developers have created many compatible packages to make it even more flexible. 
+Express.js is a popular Node.js framework, used to build web apps and APIs. It is referred to as "minimalist", as it mainly serves the basic needs of a web app, such as: handling HTTP requests, routing, and middleware integration. Despite being minimalist, developers have created many compatible packages to make it even more flexible. 
 
 ### Steps to set up Node.js and Express.js app
 Check if Node is installed: 
@@ -112,22 +113,22 @@ Now, the web app listens on the specified port, handles GET requests at /, and r
 # Containerizing the Application with Docker
 
 ### Why containerize our app?
-> Containerizing our app serves a handful of purposes. One being that each person will have a consistent environment. Instead of fixing environment issues per person/machine, you can focus on one setup that works across all systems and solves the "it works on my machine" problem. Docker is all about isolation and package dependency. 
+Containerizing our app serves a handful of purposes. One being that each person will have a consistent environment. Instead of fixing environment issues per person/machine, you can focus on one setup that works across all systems and solves the "it works on my machine" problem. Docker is all about isolation and package dependency. 
 
 ### Docker
-> Docker is a platform that allows developers to build, share, and run container applications.  
+Docker is a platform that allows developers to build, share, and run container applications.  
 
 ### Node Image Variants
-> According to the Docker documentation there are 3 main versions of Node Docker images. Regular, Alpine, and Slim. Each with different use cases, but what they mainly refer to is the underlying OS/Linux distribution and the set of pre-installed system utilities. These versions are specified as suffixes after the version number e.g. Node:20-Alpine, or no suffix for regular image, just Node:version.
+According to the Docker documentation there are 3 main versions of Node Docker images. Regular, Alpine, and Slim. Each with different use cases, but what they mainly refer to is the underlying OS/Linux distribution and the set of pre-installed system utilities. These versions are specified as suffixes after the version number e.g. Node:20-Alpine, or no suffix for regular image, just Node:version.
 
 Regular
-> This is the recommended version if you don't know exactly what you need, it casts a pretty wide net. Based in Ubuntu or Debian, includes the full set of Linux utilities and libaries. This one seems to require the least amount of package management.
+This is the recommended version if you don't know exactly what you need, it casts a pretty wide net. Based in Ubuntu or Debian, includes the full set of Linux utilities and libaries. This one seems to require the least amount of package management.
 
 Alpine
-> If you're looking for the lightest image possible, go with this one. Based in Alpine Linux which is designed to be extremely minimalistic.
+If you're looking for the lightest image possible, go with this one. Based in Alpine Linux which is designed to be extremely minimalistic.
 
 Slim 
-> From what I have read, this is the sweet spot between regular and Alpine. Based in Debian, but stripped down and removes most of the unnecessary tools.
+From what I have read, this is the sweet spot between regular and Alpine. Based in Debian, but stripped down and removes most of the unnecessary tools.
 
 https://hub.docker.com/_/node
 https://github.com/nodejs/docker-node/blob/main/README.md#how-to-use-this-image
@@ -215,10 +216,7 @@ This will run the container and map port 80 of our container to port 80 of the h
 ### Verify the container is running
 We can simply head over to http://localhost:80 and we should see the JSON:
 ```JSON
-{
-  "message": "My name is Austin",
-  "timestamp": 123456789
-}
+{"message":"My name is Austin","timestamp":123456789}
 ```
 
 or alternatively you can run the command:
@@ -421,7 +419,7 @@ on:
   push:
     branches: ["main"]
 ```
-`on` means do this workflow if... in this case we want to trigger the workflow when there is a push to the branch `main`. If this didn't exist, the workflow would never trigger.
+`on` means do this workflow if... In this case we want to trigger the workflow when there is a push to the branch `main`. If this didn't exist, the workflow would never trigger.
 
 **run-test**
 ```yaml
@@ -449,7 +447,7 @@ The first job in our workflow is designed to test our Docker image. The Liatrio 
 - The timestamp is UNIX style 
 - The timestamp is within a few seconds of the current time of testing
 
-The `run-test` job first uses `actions/checkout@v4` to fetch the code from the repository and make it available to the VM, running on Ubuntu-latest. Now that everything is available, we will build the image and run the container. With the container running, we can lastly run the Liatrio tests that were previously described. 
+The `run-test` job first uses `actions/checkout@v4` to fetch the code from the repository and make it available to the VM, running on Ubuntu-latest. Now that everything is available, we will build the image and run the container. With the container running, we can run the Liatrio tests that were previously described. This ensures the functionality of our app.
 
 **create-release-version**
 ```yaml
@@ -473,9 +471,9 @@ The `run-test` job first uses `actions/checkout@v4` to fetch the code from the r
         id: get_version
         run: echo "VERSION=${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_OUTPUT
 ```
-This job is dependent on the `run-test` job. If the tests did not pass 6/6, then we should not carry on with this job. This is why we have to have the `needs` keyword. Meaning we need the `run-test` job to have completed successfully in order to run the `create-release-version` job. Additionally information isn't passed from job to job automatically. However, you can create output for your job, that can be accessed in the next job! For this, we need the `outputs` keyword, where we essentially define a variable we want to output. In this case, I chose version to use in the next job for the image tags. 
+This job is dependent on the `run-test` job. If the tests did not pass 6/6, then we should not carry on with this job. This is why we have to have the `needs` keyword. Meaning we need the `run-test` job to have completed successfully in order to run the `create-release-version` job. Additionally information isn't passed from job to job automatically. However, you can create output for your job, that can be accessed in the next job! For this, we need the `outputs` keyword, where we essentially define a variable we want to output. In this case, I chose version to be the name of the variable passed to the next job. 
 
-`version: ${{ steps.version.outputs.VERSION }}` means we are assigning **version** to be the output of the step **get_version**, which will be explained in a few sections from now. 
+`version: ${{ steps.version.outputs.VERSION }}` means we are assigning **version** to be the output of the step **get_version**, which will be explained why we need it in a few sections from now. 
 
 ```yaml
 - name: Semantic Release
@@ -506,13 +504,107 @@ Additionally in this step, we use the keyword `env` which identifies environment
   id: get_version
   run: echo "VERSION=${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_OUTPUT
 ```
-The last step, is where we need to output the version, so we can pass it to the next job. 
+The last step, is where we need to output the version, so we can pass it to the next job. I like to think of this as a return statement. It outputs the new release version to standard output and appends it to the **GITHUB_OUTPUT** environment variable. 
+
+**push-image**
+```yaml
+  push-image:
+    runs-on: ubuntu-latest
+    needs: create-release-version
+    outputs:
+      version: ${{ needs.create-release-version.outputs.version }}
+       
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t liatrio .
+
+      - name: Log in to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push Docker image to Docker Hub
+        env:
+          VERSION: ${{ needs.create-release-version.outputs.version }}
+        run: |
+          docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:$VERSION
+          docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:$VERSION
+```
+This job is extremely simple, we are just going to use our VM to build an image and push the image to Docker Hub. The tag will be the new semantic release version. Nothing else, besides that we need to output the version once again to use in the next job.
+
+**deploy**
+```yaml
+  deploy:
+    runs-on: ubuntu-latest
+    needs: push-image
+
+    steps:
+      - name: Google Auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          service: 'liatrio'
+          region: us-west1
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ needs.push-image.outputs.version }}'
+
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
+```
+The last job of our workflow will be to redeploy our service with the updated image. Since in the previous job, we create a new image, where the tag was the new semantic release version, we need to update our image that GCR is pulling from. Before doing that, we need to authenticate ourselves. If we don't authenticate, we won't have access to our GCR service, which is a good thing! We authenticate ourselves by using the Google Auth GitHub action. Here, we just need to pass it our credentials secret. 
+
+To create the GCP_CREDENTIALS secret:
+- Go to your project on Google Cloud
+- Go to the navigation menu in the top left
+- In the nav menu, go to 'I AM & Admin'
+  - Select 'Service Accounts'
+- There should just be one service account by default, but if you don't see one, just make one
+- Select the service account
+  - Go to 'keys'
+  - Click 'Add a key' and 'create a new key'
+  - Select the JSON option
+- Once that is completed a JSON file will be downloaded
+  - Copy the contents of the JSON file and you're going to set this as the value of your new secret
+- Go to your GH repository's settings and create a new secret called 'GCP_CREDENTIALS'
+  - Paste the contents of your JSON file into the value of the secret
+
+Now that we are authenticated, we can start modifying the service!
+
+Simply use the Cloud Run GitHub Action and update your service accordingly. In this case my service is called **Liatrio**. So I will update the image for my Liatrio service and also include the region to specify my service even more! By default, if you don't include region, it will default to US-Central and create a new service called 'Liatrio' based in the US-Central region. 
+
+The last step is simply for debugging our deployment :D
 
 ---
 
 # Cloud Deployment
+### Google Cloud Run
 I chose Google Cloud Run for deployment because, in my research, I found that the container-as-a-service (CaaS) model provides the best balance of scalability, cost efficiency, and ease of management. Cloud Run allows me to deploy my microservice as a stateless container without worrying about underlying infrastructure, making it a great fit for my project. Cloud Run offers a free tier as well, which was a major bonus. The other service I considered, was AWS ECS, which offers essentially the same service, but opted to use Cloud Run because I have used GCP before.
+
+### What do we need to deploy to Google Cloud Run
+What Google Cloud will do, is pull our Docker image from our Docker Hub repository and run the container for us. Nothing else needs to be done :D
+
+### How to create a Google Cloud Run service
+Google Cloud Run just needs us to do a few things:
+- Create a project and name it whatever you want
+- Click "deploy container" 
+  - In the dropdown select "service"
+- Define where we want our service to pull the image from in the container url 
+  - This will be updated each time our GHA workflow runs. But set it initially to any version of the image we want
+- Name the service what ever you want, just remember it and make sure it matches what's in the GHA workflow
+- Pick any region, again just make sure it match the GHA workflow region
+- Now just select a few option, and leave everything else the same/default:
+  - Authentication, select the "Allow unauthenticated invocations" option
+  - Set minimum number of instance to 1
+    - This prevents cold starts
+- Go to "Container(s), volumes, networking, security
+  - Set the container port to 80
+- Press create!
 
 ---
 
-# Deployment Workflow
+# References
