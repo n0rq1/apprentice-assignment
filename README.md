@@ -598,30 +598,34 @@ Google Cloud Run just needs us to do a few things:
 
 # References
 **Node.js Application**
-https://www.w3schools.com/nodejs/nodejs_intro.asp
-https://expressjs.com/en/starter/faq.html
-https://www.youtube.com/watch?v=SccSCuHhOw0
-https://github.com/expressjs/express
-https://www.json.org/json-en.html
+
+- https://www.w3schools.com/nodejs/nodejs_intro.asp
+- https://expressjs.com/en/starter/faq.html
+- https://www.youtube.com/watch?v=SccSCuHhOw0
+- https://github.com/expressjs/express
+- https://www.json.org/json-en.html
 
 
 **Containerizing the Application with Docker**
-https://hub.docker.com/_/node 
-http://hub.docker.com/_/docker
-https://github.com/nodejs/docker-node/blob/main/README.md#how-to-use-this-image
-https://www.youtube.com/watch?v=cw34KMPSt4k
-https://www.youtube.com/watch?v=gAkwW2tuIqE
-https://docs.docker.com/reference/dockerfile/
-https://www.reddit.com/r/docker/comments/x1gd5j/rationale_for_using_docker_to_containerize/
+
+- https://hub.docker.com/_/node 
+- http://hub.docker.com/_/docker
+- https://github.com/nodejs/docker-node/blob/main/README.md#how-to-use-this-image
+- https://www.youtube.com/watch?v=cw34KMPSt4k
+- https://www.youtube.com/watch?v=gAkwW2tuIqE
+- https://docs.docker.com/reference/dockerfile/
+- https://www.reddit.com/r/docker/comments/x1gd5j/rationale_for_using_docker_to_containerize/
 
 **GitHub Actions** 
-https://github.com/actions/checkout
-https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions
-https://github.com/liatrio/github-actions/tree/v1.0.0/apprentice-action
-https://github.com/cycjimmy/semantic-release-action/tree/v4/
-https://docs.github.com/en/actions/writing-workflows
+
+- https://github.com/actions/checkout
+- https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions
+- https://github.com/liatrio/github-actions/tree/v1.0.0/apprentice-action
+- https://github.com/cycjimmy/semantic-release-action/tree/v4/
+- https://docs.github.com/en/actions/writing-workflows
 
 **Cloud Deployment**
-https://cloud.google.com/run?hl=en
-http://youtube.com/watch?v=AL2rAmWFZjM
-https://www.youtube.com/watch?v=3OP-q55hOUI
+
+- https://cloud.google.com/run?hl=en
+- http://youtube.com/watch?v=AL2rAmWFZjM
+- https://www.youtube.com/watch?v=3OP-q55hOUI
