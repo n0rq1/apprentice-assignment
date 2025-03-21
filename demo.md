@@ -1,3 +1,22 @@
+### Dockerfile
+```dockerfile
+FROM node:16-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 80
+
+CMD ["node", "index.js"]
+```
+
+### Workflow.yml
+```yaml
 name: Workflow for Liatrio Take Home Assignment 
 
 on:
@@ -83,3 +102,16 @@ jobs:
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
+```
+
+### .releaserc.json
+```js
+{
+    "branches": ["main", "demo"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/github"
+    ]
+}
+```
