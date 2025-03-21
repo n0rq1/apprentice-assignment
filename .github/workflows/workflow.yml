@@ -77,8 +77,8 @@ jobs:
         id: deploy
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
-          service: 'liatrio'
-          region: us-west1
+          service: 'liatrio-demo'
+          region: us-central1
           image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ needs.push-image.outputs.version }}'
 
       - name: 'Use output'
