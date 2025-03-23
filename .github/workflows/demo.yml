@@ -20,7 +20,7 @@ jobs:
       - name: Run Liatrio tests
         uses: liatrio/github-actions/apprentice-action@v1.0.0
 
-  create-release-version:
+  create-release-version: 
     runs-on: ubuntu-latest
     needs: run-test
     outputs:
@@ -80,6 +80,3 @@ jobs:
           service: 'liatrio-demo'
           region: us-central1
           image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ needs.push-image.outputs.version }}'
-
-      - name: 'Use output'
-        run: 'curl "${{ steps.deploy.outputs.url }}"'

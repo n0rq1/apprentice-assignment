@@ -1,7 +1,13 @@
-1. Containerizing Our Application Using Docker
-2. Pushing our Docker Image to Docker Hub
-3. Deployment to Google Cloud Run
-4. Automating 1-3 Using GitHub Actions!
+### Containerizing Our Application Using Docker
+  - Dockerfile
+  - Docker Image
+  - Docker Container
+### Pushing our Docker Image to Docker Hub
+  - Format tag
+  - Push to Docker Hub
+### Deployment to Google Cloud Run
+  - Setup GCR to pull the image and deploy!
+### Automating 1-3 Using GitHub Actions!
 
 <br></br>
 <br></br>
@@ -111,9 +117,6 @@ jobs:
           service: 'liatrio-demo'
           region: us-central1
           image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/liatrio:${{ needs.push-image.outputs.version }}'
-
-      - name: 'Use output'
-        run: 'curl "${{ steps.deploy.outputs.url }}"'
 ```
 
 ### .releaserc.json
