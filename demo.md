@@ -1,3 +1,15 @@
+1. Containerizing Our Application Using Docker
+2. Pushing our Docker Image to Docker Hub
+3. Deployment to Google Cloud Run
+4. Automating 1-3 Using GitHub Actions!
+
+<br></br>
+<br></br>
+<br></br>
+<br></br>
+<br></br>
+<br></br>
+
 ### Dockerfile
 ```dockerfile
 FROM node:16-alpine
