@@ -1,18 +1,15 @@
-### Containerizing Our Application Using Docker
+# How to Containerize a Node.js App & Deploy it Using GCR
+### Containerizing The Application Using Docker
   - Dockerfile
   - Docker Image
   - Docker Container
-### Pushing our Docker Image to Docker Hub
+### Pushing the Docker Image to Docker Hub
   - Format tag
   - Push to Docker Hub
-### Deployment to Google Cloud Run
+### Deploying to Google Cloud Run
   - Setup GCR to pull the image and deploy!
-### Automating 1-3 Using GitHub Actions!
+### Automating with GitHub Actions
 
-<br></br>
-<br></br>
-<br></br>
-<br></br>
 <br></br>
 <br></br>
 
