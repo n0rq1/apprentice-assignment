@@ -619,7 +619,6 @@ Google Cloud Run just needs us to do a few things:
 - https://github.com/liatrio/github-actions/tree/v1.0.0/apprentice-action
 - https://github.com/cycjimmy/semantic-release-action/tree/v4/
 - https://docs.github.com/en/actions/writing-workflows
-
 **Cloud Deployment**
 
 - https://cloud.google.com/run?hl=en
