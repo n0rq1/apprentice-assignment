@@ -88,11 +88,11 @@ app.listen(PORT, () => {
 });
 ```
 
-- Start by importing the express module and store it as the const 'express'
-- Create an Express app and store it as the const 'app'
-- Next, we need to define the port we want to listen to. This port is 80, in order to pass the Liatrio tests
+- Start by importing the express module and store it as the const `express`
+- Create an Express app and store it as the const `app`
+- Next, we need to define the port we want to listen on. This port is 80, in order to pass the Liatrio tests
 - Now, we need to define a route to listen to 'get' requests
-    - The Express app variable comes with numerous methods: get, listen, post, put, delete, all, etc. but we want to have our app up and running so the data is retrievable. app.get is the most appropriate for this
+    - The `app` variable comes with numerous methods: get, listen, post, put, delete, all, etc. but we want to have our app up and running so the data is retrievable. app.get is the most appropriate for this
     - app.get('/') means when we get 'get' requests to the root URL, we will respond accordingly
 - We want to respond with a JSON with a message and a timestamp, so we will define an object and store it as 'response'. Finally, we will send a JSON response to the client using res.json(), which returns the object we defined earlier. Passing the variable 'response' into the function json() will send it as a properly formatted JSON to the client. 
 - Finally we want to start our Express server and define what port we are listening on. This is achieved by app.listen(PORT,...). And every time we start the server, we just want to log that the server is up and running, and what port.
@@ -159,7 +159,7 @@ CMD ["node", "index.js"]
 ```Dockerfile
 FROM node:16-alpine
 ```
-- The first thing we need at the top of our Dockerfile is define the base for our image
+- The first thing we need at the top of our Dockerfile is the base for our image
     - Since Node has already existing images, we don't need to reinvent the wheel and we can use one of their versions
 
 ```Dockerfile
