@@ -1,21 +1,21 @@
 # How to Containerize a Node.js App & Deploy it to GCR
-### Containerizing The Application Using Docker
+### Containerizing the Application Using Docker []
   - Dockerfile
   - Docker Image
   - Docker Container
-### Pushing the Docker Image to Docker Hub
+### Pushing the Docker Image to Docker Hub []
   - Format tag
   - Push to Docker Hub
-### Deploying to Google Cloud Run
+### Deploying to Google Cloud Run []
   - Setup GCR to pull the image and deploy!
-### Automating with GitHub Actions
+### Automation with GitHub Actions []
 
 <br></br>
 <br></br>
 
 ### Dockerfile
 ```dockerfile
-FROM node:16-alpine
+FROM node:23-alpine
 
 WORKDIR /app
 
@@ -91,8 +91,6 @@ jobs:
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push Docker image to Docker Hub
-        env:
-          VERSION: ${{ needs.create-release-version.outputs.version }}
         run: |
           docker tag liatrio ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ needs.create-release-version.outputs.version }}
           docker push ${{ secrets.DOCKER_USERNAME }}/liatrio:${{ needs.create-release-version.outputs.version }}
@@ -127,6 +125,3 @@ jobs:
     ]
 }
 ```
-
-### Semantic Release Version
-![]()
