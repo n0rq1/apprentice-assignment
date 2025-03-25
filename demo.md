@@ -1,4 +1,4 @@
-# How to Containerize a Node.js App & Deploy it Using GCR
+# How to Containerize a Node.js App & Deploy it to GCR
 ### Containerizing The Application Using Docker
   - Dockerfile
   - Docker Image
