@@ -1,35 +1,3 @@
-How to Containerize a Node.js App & Deploy it to GCR
-Containerizing the Application Using Docker []
-Dockerfile
-Docker Image
-Docker Container
-Pushing the Docker Image to Docker Hub []
-Format tag
-Push to Docker Hub
-Deploying to Google Cloud Run []
-Setup GCR to pull the image and deploy!
-Automation with GitHub Actions []
-
-
-
-
-
-
-Dockerfile
-FROM node:23-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-EXPOSE 80
-
-CMD ["node", "index.js"]
-Workflow.yml
 name: Workflow for Liatrio Take Home Assignment 
 
 on:
