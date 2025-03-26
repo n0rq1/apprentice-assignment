@@ -3,10 +3,10 @@ const app = express();
 const PORT = 80;
 
 app.get('/', (req, res) => {
-  const ts = Date.now();
   const response = {
     message: "My name is Austin Norquist",
-    timestamp: ts
+    timestamp: Date.now(),
+    liatrio: "demo!"
   };
   res.json(response);
 });
