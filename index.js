@@ -7,8 +7,7 @@ app.set('json spaces', 0);
 app.get('/', (req, res) => {
   const response = {
     message: "My name is Austin Norquist",
-    timestamp: Date.now(),
-    Liatrio: "demo!"
+    timestamp: Date.now()" 
   };
   res.json(response);
 });
