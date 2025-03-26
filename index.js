@@ -2,9 +2,8 @@ const express = require('express');
 const app = express();
 const PORT = 80;
 
-const ts = Date.now();
-
 app.get('/', (req, res) => {
+  const ts = Date.now();
   const response = {
     message: "My name is Austin Norquist",
     timestamp: ts
