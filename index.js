@@ -2,12 +2,12 @@ const express = require('express');
 const app = express();
 const PORT = 80;
 
-app.set('json spaces', 0);
+const ts = Date.now();
 
 app.get('/', (req, res) => {
   const response = {
     message: "My name is Austin Norquist",
-    timestamp: Date.now() 
+    timestamp: ts
   };
   res.json(response);
 });
