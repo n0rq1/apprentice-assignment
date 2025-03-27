@@ -8,7 +8,7 @@ app.get('/', (req, res) => {
     timestamp: Date.now()
   };
 
-  const minified = JSON.stringify(response);
+  const minified = JSON.stringify(response, 0, null);
 
   res.setHeader('Content-Type', 'application/json');
   res.send(minified); 
