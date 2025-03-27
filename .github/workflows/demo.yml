@@ -18,7 +18,7 @@ jobs:
         run: docker run -d -p 80:80 liatrio
 
       - name: Run Liatrio tests
-        uses: liatrio/github-actions/apprentice-action@master
+        uses: liatrio/github-actions/apprentice-action@v1.0.0
 
   create-release-version:
     runs-on: ubuntu-latest
