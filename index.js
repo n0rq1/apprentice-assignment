@@ -3,7 +3,15 @@ const app = express();
 const PORT = 80;
 
 app.get('/', (req, res) => {
-  res.json({message: "My name is Austin", timestamp: Date.now()})
+  const response = {
+    message: "My name is Austin",
+    timestamp: Date.now()
+  };
+
+  const minified = JSON.stringify(response);
+
+  res.setHeader('Content-Type', 'application/json');
+  res.send(minified); 
 });
 
 app.listen(PORT, () => {
