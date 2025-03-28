@@ -3,6 +3,8 @@ name: Workflow for Liatrio Take Home Assignment
 on:
   push:
     branches: ["main", "demo"]
+  pull_request:
+    branches: ["main"]
 
 jobs: 
   run-test:

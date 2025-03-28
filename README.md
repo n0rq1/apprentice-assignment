@@ -5,36 +5,38 @@
 ---
 # Table of Contents
 
-1. [Node.js Application](#nodejs-application)  
-    - [Node.js](#nodejs)  
-    - [Express.js](#expressjs)  
-    - [Steps to Set Up Node.js and Express.js App](#steps-to-set-up-nodejs-and-expressjs-app)  
-    - [Implement Server](#implement-server)  
-    - [Run the Server](#run-the-server)  
-
-2. [Containerizing the Application with Docker](#containerizing-the-application-with-docker) 
-    - [Why containerize our app?](#why-containerize-our-app) 
-    - [Docker](#docker)  
-    - [Node Image Variants](#node-image-variants)  
-    - [Make sure Docker is installed and the Docker daemon is running](#make-sure-docker-is-installed-and-make-sure-docker-daemon-is-running) 
-    - [Create Dockerfile](#create-dockerfile)  
+- [Documentation for my take home assignment](#documentation-for-my-take-home-assignment)
+  - [](#)
+- [Table of Contents](#table-of-contents)
+- [Node.js application](#nodejs-application)
+    - [Node.js](#nodejs)
+    - [Express.js](#expressjs)
+    - [Steps to set up Node.js and Express.js app](#steps-to-set-up-nodejs-and-expressjs-app)
+    - [Implement server](#implement-server)
+    - [Run the server:](#run-the-server)
+- [Containerizing the Application with Docker](#containerizing-the-application-with-docker)
+    - [Why containerize our app?](#why-containerize-our-app)
+    - [Docker](#docker)
+    - [Node Image Variants](#node-image-variants)
+    - [Make sure Docker is installed and make sure Docker daemon is running](#make-sure-docker-is-installed-and-make-sure-docker-daemon-is-running)
+    - [Create Dockerfile](#create-dockerfile)
     - [Dockerfile Breakdown](#dockerfile-breakdown)
-    - [Build the Docker image](#build-the-docker-image)  
-    - [Run the Docker Container](#run-the-docker-container)  
-    - [Verify the container is running](#verify-the-container-is-running)  
-
-3. [GitHub Actions](#github-actions)
+    - [Build the Docker image](#build-the-docker-image)
+    - [Run the Docker Container](#run-the-docker-container)
+    - [Verify the container is running](#verify-the-container-is-running)
+- [GitHub Actions](#github-actions)
     - [What is GitHub Actions?](#what-is-github-actions)
     - [General Structure of GitHub Action Workflows](#general-structure-of-github-action-workflows)
     - [Prerequisites for OUR GitHub Action Workflow](#prerequisites-for-our-github-action-workflow)
     - [Creating our GitHub Action Workflow](#creating-our-github-action-workflow)
     - [Stucture of the workflow](#stucture-of-the-workflow)
     - [Breakdown of workflow.yml](#breakdown-of-workflowyml)
-
-4. [Cloud Deployment](#cloud-deployment)
+- [How to create the GCP\_CREDENTIALS secret:](#how-to-create-the-gcp_credentials-secret)
+- [Cloud Deployment](#cloud-deployment)
     - [Google Cloud Run](#google-cloud-run)
     - [What do we need to deploy to Google Cloud Run](#what-do-we-need-to-deploy-to-google-cloud-run)
     - [How to create a Google Cloud Run service](#how-to-create-a-google-cloud-run-service)
+- [References](#references)
 
 ---
 
@@ -593,6 +595,7 @@ Google Cloud Run just needs us to do a few things:
 ---
 
 # References
+
 **Node.js Application**
 
 - https://www.w3schools.com/nodejs/nodejs_intro.asp
@@ -619,6 +622,7 @@ Google Cloud Run just needs us to do a few things:
 - https://github.com/liatrio/github-actions/tree/v1.0.0/apprentice-action
 - https://github.com/cycjimmy/semantic-release-action/tree/v4/
 - https://docs.github.com/en/actions/writing-workflows
+
 **Cloud Deployment**
 
 - https://cloud.google.com/run?hl=en
