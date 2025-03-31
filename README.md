@@ -1,8 +1,9 @@
-# Documentation for my take home assignment
+# Documentation for Liatrio take home assignment
 
 ---
 ![Deploy Badge](https://github.com/n0rq1/apprentice-assignment/actions/workflows/workflow.yml/badge.svg)
 ---
+
 # Table of Contents
 
 - [Documentation for my take home assignment](#documentation-for-my-take-home-assignment)
