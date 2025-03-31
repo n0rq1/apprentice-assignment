@@ -16,6 +16,17 @@ jobs:
       - name: Build Docker image
         run: docker build -t liatrio .
 
+      - name: Save Docker image as artifact
+        run: |
+          docker save -o liatrio.tar liatrio
+        shell: bash
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: liatrio-image
+          path: liatrio.tar
+
       - name: Run Docker container
         run: docker run -d -p 80:80 liatrio
 
@@ -52,8 +63,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Build Docker image
-        run: docker build -t liatrio .
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: liatrio-image
+
+      - name: Load Docker image
+        run: docker load -i liatrio.tar
 
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
