@@ -7,11 +7,7 @@ app.get('/', (req, res) => {
     message: "My name is Austin",
     timestamp: Date.now()
   };
-
-  const minified = JSON.stringify(response, 0, null);
-
-  res.setHeader('Content-Type', 'application/json');
-  res.send(minified); 
+  res.json(response)
 });
 
 app.listen(PORT, () => {
