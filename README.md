@@ -1,7 +1,7 @@
 # Documentation for Liatrio take home assignment
 
 ---
-![Deploy Badge](https://github.com/n0rq1/apprentice-assignment/actions/workflows/workflow.yml/badge.svg)
+![Deploy Badge](https://github.com/n0rq1/apprentice-assignment/actions/workflows/demo.yml/badge.svg)
 ---
 
 # Table of Contents
