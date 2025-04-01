@@ -7,7 +7,6 @@
 # Table of Contents
 
 - [Documentation for my take home assignment](#documentation-for-my-take-home-assignment)
-  - [](#)
 - [Table of Contents](#table-of-contents)
 - [Node.js application](#nodejs-application)
     - [Node.js](#nodejs)
